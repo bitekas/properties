@@ -1,5 +1,5 @@
-#ifndef PROPLIB_PSEUDOHANA_HPP_
-#define PROPLIB_PSEUDOHANA_HPP_
+#ifndef PROPLIB_PSEUDOHANA_HPP_c
+#define PROPLIB_PSEUDOHANA_HPP_c
 
 #include <utility> // for std::is_same
 
@@ -29,47 +29,47 @@ THE SOFTWARE.
 The original idea for this: Louis Dionne, the boost::hana library.
 #endif
 
-namespace pseudohana {
+namespace meta {
 template <typename T>
-struct type_t { using type = T; };
+struct type_ { using type = T; };
 template <typename T>
-type_t<T> type_;
+type_<T> type_c;
 
 template <typename Type, Type Value>
-struct value_t {
+struct value_ {
   using type = Type;
   static constexpr type value{Value};
   constexpr operator Type () const { return Value; };
   static constexpr type get() { return Value; }
 };
 template <typename Type, Type Value>
-value_t<Type, Value> value_;
+value_<Type, Value> value_c;
 
 template <bool Value>
-using bool_t = value_t<bool, Value>;
-using true_t = bool_t<true>;
-using false_t = bool_t<false>;
+using bool_ = value_<bool, Value>;
+using true_ = bool_<true>;
+using false_ = bool_<false>;
 
-template <bool Value> bool_t<Value> bool_;
-true_t true_;
-false_t false_;
+template <bool Value> bool_<Value> bool_c;
+true_ true_c;
+false_ false_c;
 
-constexpr true_t operator!(false_t) { return {}; };
-constexpr false_t operator!(true_t) { return {}; };
+constexpr true_ operator!(false_) { return {}; };
+constexpr false_ operator!(true_) { return {}; };
 
 template <typename T, typename S>
-constexpr auto operator==(type_t<T>, type_t<S>) {
-  return bool_<std::is_same<T, S>::value>;
+constexpr auto operator==(type_<T>, type_<S>) {
+  return bool_c<std::is_same<T, S>::value>;
 };
 
 template <typename T, typename S>
-constexpr auto operator!=(type_t<T> x, type_t<S> y) { return !(x == y); }
+constexpr auto operator!=(type_<T> x, type_<S> y) { return !(x == y); }
 
 template <typename T1, T1 V1, typename T2, T2 V2>
-constexpr auto operator==(value_t<T1, V1>, value_t<T2, V2>) {
-  return bool_<type_<T1> == type_<T2> && V1 == V2>;
+constexpr auto operator==(value_<T1, V1>, value_<T2, V2>) {
+  return bool_c<type_c<T1> == type_c<T2> && V1 == V2>;
 };
 
-} // pseudohana
+} // meta
 
 #endif

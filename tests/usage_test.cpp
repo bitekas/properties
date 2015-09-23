@@ -5,21 +5,21 @@
 #include <iostream>
 #include <string>
 
-using namespace pseudohana;
+using namespace meta;
 
 /** consumes 8 bytes, because of alignment */
 template <int I>
 struct property_test {
-  using self_t = property_test;
+  using self_ = property_test;
 public:
   int value_;
 
   int const& get_value() const { return value_; }
   int const& set_value(int const& x) { return value_ = x; }
 
-  LIBPROPERTY_PROPERTY(prop1, self_t, get_value, set_value);
-  LIBPROPERTY_PROPERTY(prop2, self_t, get_value, set_value);
-  LIBPROPERTY_PROPERTY(prop3, self_t, get_value, set_value);
+  LIBPROPERTY_PROPERTY(prop1, self_, get_value, set_value);
+  LIBPROPERTY_PROPERTY(prop2, self_, get_value, set_value);
+  LIBPROPERTY_PROPERTY(prop3, self_, get_value, set_value);
 };
 /** consumes 8 bytes, because of alignment */
 static_assert(sizeof(property_test<0>) == sizeof(int) + sizeof(int),
@@ -28,12 +28,12 @@ static_assert(sizeof(property_test<0>) == sizeof(int) + sizeof(int),
 
 template <typename T>
 struct property_with_storage_test {
-  using self_t = property_with_storage_test;
+  using self_ = property_with_storage_test;
 public:
   T const& get_value() const { return prop1.value; }
   T const& set_value(T const& x) { return prop1.value = x; }
 
-  LIBPROPERTY_PROPERTY_WITH_STORAGE(T, prop1, self_t, get_value, set_value);
+  LIBPROPERTY_PROPERTY_WITH_STORAGE(T, prop1, self_, get_value, set_value);
 };
 static_assert(sizeof(property_with_storage_test<char>) == sizeof(char),
               "Supposed to be equal in size as what it's storing!");

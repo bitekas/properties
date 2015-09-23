@@ -1,5 +1,5 @@
-#ifndef LIBPROPERTY_PROPERTY_HPP_
-#define LIBPROPERTY_PROPERTY_HPP_
+#ifndef LIBPROPERTY_PROPERTY_HPP_c
+#define LIBPROPERTY_PROPERTY_HPP_c
 
 #if 0
 The MIT License (MIT)
@@ -30,17 +30,18 @@ THE SOFTWARE.
 #include <utility> // for std::forward
 
 // only call in class scope!
-#define LIBPROPERTY_PROPERTY_WITH_STORAGE(type, name, host, getter, setter)   \
-  ::libproperty::rw_property<type_t<struct LIBPROPERTY__TAG_NAME(name)>,      \
-                             type_t<host>,                                    \
-                             value_t<decltype(&host::getter), &host::getter>, \
-                             value_t<decltype(&host::setter), &host::setter>, \
-                             type> name;                                      \
-  auto static constexpr LIBPROPERTY__FUNC_NAME(decltype(type_tag(name))) {    \
-    return &host::name;                                                       \
-  }                                                                           \
-  /* so that we can have the missing semicolon... */                          \
-  struct LIBPROPERTY__TAG_NAME(name)
+#define LIBPROPERTY_PROPERTY_WITH_STORAGE(type, name, host, getter, setter) \
+  ::libproperty::rw_property<                                               \
+      ::meta::type_<struct LIBPROPERTY__TAG_NAME(name)>,              \
+      ::meta::type_<host>,                                            \
+      ::meta::value_<decltype(&host::getter), &host::getter>,         \
+      ::meta::value_<decltype(&host::setter), &host::setter>,         \
+      type> name;                                                           \
+  auto static constexpr LIBPROPERTY__FUNC_NAME(decltype(type_tag(name))) {  \
+    return &host::name;                                                     \
+  }                                                                         \
+  /* so that we can have the missing semicolon... */                        \
+  static_assert(true, "")
 
 #define LIBPROPERTY_PROPERTY(name, host, getter, setter) \
   LIBPROPERTY_PROPERTY_WITH_STORAGE(char, name, host, getter, setter)
@@ -85,8 +86,8 @@ private: // for the use of host, not for nobody's!
 
 template <typename T>
 constexpr auto type_tag(T const&) {
-  using pseudohana::type_;
-  return type_<typename T::type_tag>;
+  using meta::type_c;
+  return type_c<typename T::type_tag>;
 }
 }  // property
 

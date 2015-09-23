@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 #endif
 
-#include "pseudohana.hpp"
+#include "meta.hpp"
 #include <cstddef> // for std::size_t
 
 #define LIBPROPERTY__TAG_NAME(name) _proplib__##name##_prop_tag
@@ -47,7 +47,7 @@ Host const& get_host(Property const* property) {
   return *reinterpret_cast<Host const*>(
              reinterpret_cast<char const*>(property) -
              member_pointer_to_offset<Host>(Host::LIBPROPERTY__FUNC_NAME(
-                 pseudohana::type_<typename Property::type_tag>)));
+                 meta::type_c<typename Property::type_tag>)));
 }
 
 template <typename Host, typename Property>
