@@ -9,9 +9,9 @@ not in boost yet, I implemented a local version from memory.
 Usage:
 ------
 
-* See <libproperty/usage_test.cpp>.
+* See [test](tests/usage_test.cpp) for examples.
 
-=== Quick example: ===
+### Quick example: ###
 
     #include "libproperty/property.hpp"
     #include <iostream>
@@ -37,7 +37,7 @@ Usage:
 
 Public interface:
 -----------------
-For the public interface, see <libproperty/property.hpp>.
+For the public interface, see [the main source file](libproperty/property.hpp).
 
 
 Other nifty features:
