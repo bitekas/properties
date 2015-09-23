@@ -13,27 +13,29 @@ Usage:
 
 ### Quick example: ###
 
-    #include "libproperty/property.hpp"
-    #include <iostream>
-    #include <string>
-    struct my_class {
+```c++
+#include "libproperty/property.hpp"
+#include <iostream>
+#include <string>
+struct my_class {
 
-      int const& my_getter() const { return property.value; }
-      int const& my_setter(std::string const& x) {
-        return property.value = atoi(x.c_str());
-      }
-      int const& my_int_setter(int x) { return property.value = x; }
-      LIBPROPERTY_PROPERTY_WITH_STORAGE(
-          int, property, my_class, my_getter, my_setter);
-    };
+  int const& my_getter() const { return property.value; }
+  int const& my_setter(std::string const& x) {
+    return property.value = atoi(x.c_str());
+  }
+  int const& my_int_setter(int x) { return property.value = x; }
+  LIBPROPERTY_PROPERTY_WITH_STORAGE(
+      int, property, my_class, my_getter, my_setter);
+};
 
-    int main() {
-      my_class a;
-      a.property = "5";
-      std::cout << "should print 8: " << a.property + 3 << '\n';
-      std::cout << "sizeof(a): " << sizeof(a)
-                << " == sizeof(int): " << sizeof(int) << '\n';
-    }
+int main() {
+  my_class a;
+  a.property = "5";
+  std::cout << "should print 8: " << a.property + 3 << '\n';
+  std::cout << "sizeof(a): " << sizeof(a)
+            << " == sizeof(int): " << sizeof(int) << '\n';
+}
+```
 
 Public interface:
 -----------------
