@@ -32,10 +32,10 @@ THE SOFTWARE.
 // only call in class scope!
 #define LIBPROPERTY_PROPERTY_WITH_STORAGE(type, name, host, getter, setter) \
   ::libproperty::rw_property<                                               \
-      ::meta::type_<struct LIBPROPERTY__TAG_NAME(name)>,              \
-      ::meta::type_<host>,                                            \
-      ::meta::value_<decltype(&host::getter), &host::getter>,         \
-      ::meta::value_<decltype(&host::setter), &host::setter>,         \
+      ::meta::type_<struct LIBPROPERTY__TAG_NAME(name)>,                    \
+      ::meta::type_<host>,                                                  \
+      ::meta::value_<decltype(&host::getter), &host::getter>,               \
+      ::meta::value_<decltype(&host::setter), &host::setter>,               \
       type> name;                                                           \
   auto static constexpr LIBPROPERTY__FUNC_NAME(decltype(type_tag(name))) {  \
     return &host::name;                                                     \
@@ -71,8 +71,8 @@ struct rw_property {
     return (get_host<host>(this).*setter::value)(std::forward<X>(x));
   }
 
-private: // for the use of host, not for nobody's!
-  ValueType value; // possibly unused.
+private:           // for the use of host, not for nobody's!
+  ValueType value;  // possibly unused.
 
   /// disallow copying for non-friend users of the class - this doesn't have a
   /// value, but if copied, it can get really, really bad (stack corruption).

@@ -31,7 +31,9 @@ The original idea for this: Louis Dionne, the boost::hana library.
 
 namespace meta {
 template <typename T>
-struct type_ { using type = T; };
+struct type_ {
+  using type = T;
+};
 template <typename T>
 type_<T> type_c;
 
@@ -39,37 +41,12 @@ template <typename Type, Type Value>
 struct value_ {
   using type = Type;
   static constexpr type value{Value};
-  constexpr operator Type () const { return Value; };
+  constexpr operator Type() const { return Value; };
   static constexpr type get() { return Value; }
 };
 template <typename Type, Type Value>
 value_<Type, Value> value_c;
 
-template <bool Value>
-using bool_ = value_<bool, Value>;
-using true_ = bool_<true>;
-using false_ = bool_<false>;
-
-template <bool Value> bool_<Value> bool_c;
-true_ true_c;
-false_ false_c;
-
-constexpr true_ operator!(false_) { return {}; };
-constexpr false_ operator!(true_) { return {}; };
-
-template <typename T, typename S>
-constexpr auto operator==(type_<T>, type_<S>) {
-  return bool_c<std::is_same<T, S>::value>;
-};
-
-template <typename T, typename S>
-constexpr auto operator!=(type_<T> x, type_<S> y) { return !(x == y); }
-
-template <typename T1, T1 V1, typename T2, T2 V2>
-constexpr auto operator==(value_<T1, V1>, value_<T2, V2>) {
-  return bool_c<type_c<T1> == type_c<T2> && V1 == V2>;
-};
-
-} // meta
+}  // meta
 
 #endif
