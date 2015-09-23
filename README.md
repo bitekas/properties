@@ -23,7 +23,6 @@ struct my_class {
   int const& my_setter(std::string const& x) {
     return property.value = atoi(x.c_str());
   }
-  int const& my_int_setter(int x) { return property.value = x; }
   LIBPROPERTY_PROPERTY_WITH_STORAGE(
       int, property, my_class, my_getter, my_setter);
 };
