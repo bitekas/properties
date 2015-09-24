@@ -31,18 +31,21 @@ THE SOFTWARE.
 
 // only call in class scope!
 #define LIBPROPERTY_PROPERTY_WITH_STORAGE(type, name, host, getter, setter) \
+  struct LIBPROPERTY__TAG_NAME(name);                                       \
   ::libproperty::rw_property<                                               \
-      ::meta::type_<struct LIBPROPERTY__TAG_NAME(name)>,                    \
-      ::meta::type_<host>,                                                  \
+      ::meta::type_<host::LIBPROPERTY__TAG_NAME(name)>,                     \
+      host,                                                                 \
       ::meta::value_<decltype(&host::getter), &host::getter>,               \
       ::meta::value_<decltype(&host::setter), &host::setter>,               \
       type> name;                                                           \
-  auto static constexpr LIBPROPERTY__FUNC_NAME(decltype(type_tag(name))) {  \
+  auto static constexpr LIBPROPERTY__FUNC_NAME(                             \
+      decltype(::libproperty::impl::type_tag(name))) {                      \
     return &host::name;                                                     \
   }                                                                         \
   /* so that we can have the missing semicolon... */                        \
   static_assert(true, "")
 
+// end define
 #define LIBPROPERTY_PROPERTY(name, host, getter, setter) \
   LIBPROPERTY_PROPERTY_WITH_STORAGE(char, name, host, getter, setter)
 
@@ -57,7 +60,8 @@ struct rw_property {
   using getter = Getter;
   using setter = Setter;
   using type_tag = TypeTag;
-  using host = typename Host::type;
+  using host = Host;
+  using value_type = ValueType;
 
   friend host;
 
@@ -65,13 +69,17 @@ struct rw_property {
     using namespace ::libproperty::impl;
     return (get_host<host>(this).*getter::value)();
   }
+
   template <typename X>
   decltype(auto) operator=(X&& x) {
     using namespace ::libproperty::impl;
     return (get_host<host>(this).*setter::value)(std::forward<X>(x));
   }
 
-private:           // for the use of host, not for nobody's!
+/* TODO: write comment that explains you don't have to use 'value' and that
+ * it's not required to be related to the getter and setter at all. */
+
+private:            // for the use of host, not for nobody's!
   ValueType value;  // possibly unused.
 
   /// disallow copying for non-friend users of the class - this doesn't have a
@@ -84,11 +92,6 @@ private:           // for the use of host, not for nobody's!
   rw_property(rw_property&&) = default;
 };
 
-template <typename T>
-constexpr auto type_tag(T const&) {
-  using meta::type_c;
-  return type_c<typename T::type_tag>;
-}
 }  // property
 
 #endif

@@ -1,5 +1,6 @@
 #include "../libproperty/property.hpp"
 
+#include <cassert>
 #include <cstddef>
 #include <utility>
 #include <iostream>
@@ -51,16 +52,37 @@ struct my_class {
   int const& my_int_setter(int x) { return property.value = x; }
   LIBPROPERTY_PROPERTY_WITH_STORAGE(
       int, property, my_class, my_getter, my_setter);
+  LIBPROPERTY_PROPERTY(as_int, my_class, my_getter, my_int_setter);
+};
+
+struct offset_of_test {
+  int i;
+  size_t j;
+};
+
+auto y = [](auto x) {
+  std::cout << x << std::endl;
 };
 
 int main() {
+  {
+    using namespace libproperty::impl;
+    assert(offset_of<offset_of_test>(&offset_of_test::j) ==
+           offsetof(offset_of_test, j));
+    assert(offset_of<offset_of_test>(&offset_of_test::i) ==
+           offsetof(offset_of_test, i));
+  }
   {
     property_test<0> x;
     property_test<0> y;
     x.prop1 = 5;
     y = x;
     std::cout << "sizeof property_test: " << sizeof(x) << " " << x.prop1 << " "
-              << y.prop2 << '\n';
+              << y.prop2 << " prop1 offset:"
+              << libproperty::impl::offset_of_property<decltype(x)>(&x.prop1)
+              << " prop2 offset: "
+              << libproperty::impl::offset_of_property<decltype(x)>(&x.prop2)
+              << '\n';
   }
   {
     property_with_storage_test<int> x;

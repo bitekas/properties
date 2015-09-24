@@ -28,33 +28,56 @@ THE SOFTWARE.
 #include "meta.hpp"
 #include <cstddef> // for std::size_t
 
-#define LIBPROPERTY__TAG_NAME(name) _proplib__##name##_prop_tag
-#define LIBPROPERTY__FUNC_NAME _proplib__offset_get
+#define LIBPROPERTY__TAG_NAME(name) _libproperty__##name##_prop_tag
+#define LIBPROPERTY__FUNC_NAME _libproperty__offset_get
 
 namespace libproperty {
 namespace impl {
+
+template <typename T>
+auto constexpr type_tag(T const&) {
+  using meta::type_c;
+  return type_c<typename T::type_tag>;
+}
+
 /**
  * Alternative implementation of offsetof, but with a member pointer instead of
  * a name. At this point, the host type is fully defined.
  */
-template <typename Host, typename T>
-auto constexpr member_pointer_to_offset(T ptr) {
-  return reinterpret_cast<std::size_t>(&((Host*)0->*ptr));
-};
-
-template <typename Host, typename Property>
-Host const& get_host(Property const* property) {
-  return *reinterpret_cast<Host const*>(
-             reinterpret_cast<char const*>(property) -
-             member_pointer_to_offset<Host>(Host::LIBPROPERTY__FUNC_NAME(
-                 meta::type_c<typename Property::type_tag>)));
+template <typename Host, typename PointerToMemberType>
+auto constexpr offset_of(PointerToMemberType member_ptr) {
+  return reinterpret_cast<std::size_t>(&((Host*)0->*member_ptr));
 }
 
 template <typename Host, typename Property>
+auto constexpr offset_of_property(Property const* property) {
+  auto const tag = type_tag(*property);
+  auto const member_ptr = Host::LIBPROPERTY__FUNC_NAME(tag);
+  return offset_of<Host>(member_ptr);
+}
+
+/**
+ * @param property should be the 'this' pointer of an rw_property or
+ * compatible class.
+ */
+template <typename Host, typename Property>
+constexpr Host const& get_host(Property const* property) {
+  auto const raw_property_ptr = reinterpret_cast<char const*>(property);
+  auto const raw_host_ptr =
+      raw_property_ptr - offset_of_property<Host>(property);
+  auto const host_ptr = reinterpret_cast<Host const*>(raw_host_ptr);
+  return *host_ptr;
+}
+
+/**
+ * Cast const back in, then cast it out again, so main functions remain const.
+ */
+template <typename Host, typename Property>
 Host& get_host(Property* property) {
-  return const_cast<Host&>(
-      get_host<Host>(const_cast<Property const*>(property)));
-};
+  auto const const_property_ptr = const_cast<Property const*>(property);
+  auto const& const_host_ref = get_host<Host>(const_property_ptr);
+  return const_cast<Host&>(const_host_ref);
+}
 
 }  // impl
 } // property

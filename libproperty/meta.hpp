@@ -34,6 +34,7 @@ template <typename T>
 struct type_ {
   using type = T;
 };
+
 template <typename T>
 type_<T> type_c;
 
@@ -41,9 +42,10 @@ template <typename Type, Type Value>
 struct value_ {
   using type = Type;
   static constexpr type value{Value};
-  constexpr operator Type() const { return Value; };
+  constexpr operator type() const { return Value; };
   static constexpr type get() { return Value; }
 };
+
 template <typename Type, Type Value>
 value_<Type, Value> value_c;
 
