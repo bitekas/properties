@@ -50,6 +50,6 @@ getter/setter capabilities do inflate - one needs at least one byte per class).
    auto x = y.property;
 
 does not work - the copy constructor is private, as are assignment operators for
-the property type. It is therefore hard to copy it out of hte class, where
+the property type. It is therefore hard to copy it out of the class, where
 accessing it would cause extreme havoc (don't do that!).
 
